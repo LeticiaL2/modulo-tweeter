@@ -504,11 +504,12 @@ export class TweetsService {
           retweet.tweet.usuario.id === user.id &&
           retweet.tweet.excluido === false,
       ),
-      isRetweetedWithoutQuoteByUser: tweet.retweets.filter(retweet => {
-        retweet.tweet.usuario.id === user.id &&
+      isRetweetedWithoutQuoteByUser: tweet.retweets.filter(
+        retweet =>
+          retweet.tweet.usuario.id === user.id &&
           retweet.tweet.texto === null &&
-          retweet.tweet.excluido === false
-      }),
+          retweet.tweet.excluido === false,
+      ),
       likes: tweet.likes.length,
       comentarios: tweet.comentarios.length,
       retweets: tweet.retweets.filter(
@@ -526,44 +527,48 @@ export class TweetsService {
         : null,
       comentariosArray:
         tweet.comentarios.length !== 0
-          ? tweet.comentarios.map(comentario => {
-              const {
-                id,
-                texto,
-                data_criacao,
-                likes,
-                comentarios,
-                retweets,
-                excluido,
-                usuario: usuarioComentario,
-              } = comentario.tweet
+          ? tweet.comentarios
+              .filter(comentario => !comentario.tweet.excluido)
+              .map(comentario => {
+                const {
+                  id,
+                  texto,
+                  data_criacao,
+                  likes,
+                  comentarios,
+                  retweets,
+                  excluido,
+                  usuario: usuarioComentario,
+                } = comentario.tweet
 
-              return {
-                id,
-                texto,
-                usuario: usuarioComentario.usuario,
-                usuarioId: usuarioComentario.id,
-                nome: usuarioComentario.nome,
-                likes: likes.length,
-                comentarios: comentarios.length,
-                retweets: retweets.filter(retweet => !retweet.tweet.excluido)
-                  .length,
-                data: data_criacao,
-                isRemoved: excluido,
-                isLikedByUser: likes.some(like => like.usuario.id === user.id),
-                isRetweetedByUser: retweets.some(
-                  retweet =>
-                    retweet.tweet.usuario.id === user.id &&
-                    retweet.tweet.excluido === false,
-                ),
-                isRetweetedWithoutQuoteByUser: retweets.filter(
-                  retweet =>
-                    retweet.tweet.usuario.id === user.id &&
-                    retweet.tweet.texto === null &&
-                    retweet.tweet.excluido === false,
-                ),
-              }
-            })
+                return {
+                  id,
+                  texto,
+                  usuario: usuarioComentario.usuario,
+                  usuarioId: usuarioComentario.id,
+                  nome: usuarioComentario.nome,
+                  likes: likes.length,
+                  comentarios: comentarios.length,
+                  retweets: retweets.filter(retweet => !retweet.tweet.excluido)
+                    .length,
+                  data: data_criacao,
+                  isRemoved: excluido,
+                  isLikedByUser: likes.some(
+                    like => like.usuario.id === user.id,
+                  ),
+                  isRetweetedByUser: retweets.some(
+                    retweet =>
+                      retweet.tweet.usuario.id === user.id &&
+                      retweet.tweet.excluido === false,
+                  ),
+                  isRetweetedWithoutQuoteByUser: retweets.filter(
+                    retweet =>
+                      retweet.tweet.usuario.id === user.id &&
+                      retweet.tweet.texto === null &&
+                      retweet.tweet.excluido === false,
+                  ),
+                }
+              })
           : [],
     }
 
@@ -633,18 +638,5 @@ export class TweetsService {
     }
 
     return response
-
-    // await this.tweetRepository.delete(tweet)
-
-    // const response = {
-    //   status: true,
-    //   mensagem: {
-    //     codigo: 200,
-    //     texto: 'Tweet excluído com sucesso',
-    //   },
-    //   conteudo: null,
-    // }
-
-    // return response
   }
 }
